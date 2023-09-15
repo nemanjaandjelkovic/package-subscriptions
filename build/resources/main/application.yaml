@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: API
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/package-subscriptions
+    username: postgres
+    password:
+    driverClassName: org.postgresql.Driver
+
+job:
+  time: 900000
