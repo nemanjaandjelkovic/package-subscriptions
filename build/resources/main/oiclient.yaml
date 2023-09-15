@@ -1,5 +1,0 @@
-url: http://localhost:18080/api/masterdata/
-headers:
-  user-id: cic.all
-options:
-  connectTimeout: 5000

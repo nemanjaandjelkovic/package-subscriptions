@@ -1,17 +1,35 @@
-spring:
-  profiles:
-    active: API
-  jpa:
-    database: POSTGRESQL
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
-  datasource:
-    platform: postgres
-    url: jdbc:postgresql://localhost:5432/package-subscriptions
-    username: postgres
-    password:
-    driverClassName: org.postgresql.Driver
+#spring:
+#  profiles:
+#    active: API
+#  jpa:
+#    database: POSTGRESQL
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: create-drop
+#  datasource:
+#    platform: postgres
+#    url: jdbc:postgresql://localhost:5432/package-subscriptions
+#    username: postgres
+#    password:
+#    driverClassName: org.postgresql.Driver
 
-job:
-  time: 900000
+dcs:
+  service-bus:
+    clients:
+      package-events:
+        entitiesType: "TOPIC"
+        entitiesName: ${TOPIC_NAME}
+        subscriptionName: ${TOPIC_SUBSCRIPTION_NAME}
+        credentials:
+          clientId: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          tenantId: ${TENANT_ID}
+          fullyQualifiedNamespace: ${SERVICEBUS_QUALIFIED_NAMESPACE}
+        contentType: JSON
+
+package-events:
+  datasource-type: remote
+  job:
+    schedule-time: 900000
+  service-bus-clients:
+    sender: "package-events"

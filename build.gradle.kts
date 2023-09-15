@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+//    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -47,9 +47,9 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-reload4j")
     }
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
-    implementation("org.springframework.boot:spring-boot-configuration-processor:3.1.3")
-
-    runtimeOnly("org.postgresql:postgresql")
+//    implementation("org.springframework.boot:spring-boot-configuration-processor:3.1.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+//    runtimeOnly("org.postgresql:postgresql")
 }
 
 tasks.withType<KotlinCompile> {
