@@ -1,34 +1,34 @@
 package com.dcs.oiremote
 
-import com.digitalchargingsolutions.middleware.oiapiclient.datasource.service.OIServiceRemoteDataSource
+import com.dcs.datasource.exception.DataSourceException
 import com.digitalchargingsolutions.middleware.oiapiclient.model.filter.ServiceFilter
 import com.digitalchargingsolutions.middleware.oiapiclient.model.response.Service
 import kotlinx.coroutines.*
 import org.springframework.stereotype.Component
 
 @Component
-class OIClientService(private var client: OIServiceRemoteDataSource) {
+class OIClientService(private var client: OIClientProvider) {
 
-    fun getServices(filter: ServiceFilter): List<Service> {
+    fun getServices(filter: ServiceFilter): Result<List<Service>> {
         val services = mutableListOf<Service>()
-        runBlocking {
-            //TODO  HVATA IZUZETAK AKO JE STRANICA PRAZNA
-            val firstPage = client.getServices(filter)
-            val totalPages = firstPage.pagination.totalPages
-            services.addAll(firstPage.data.toMutableList())
-            val jobs = (2..totalPages).map {
-                CoroutineScope(Dispatchers.IO).launch {
-                    //TODO SINHRONIZUJE
-                    filter.page = it.toInt()
-                    //TODO HVATA IZUZETAK AKO JE STRANICA PRAZNA
-                    val data = client.getServices(filter)
-                    synchronized(services) {
-                        services.addAll(data.data)
+        runCatching {
+            runBlocking {
+                val firstPage = client.remoteDataSource().getServices(filter)
+                val totalPages = firstPage.pagination.totalPages
+                services.addAll(firstPage.data.toMutableList())
+                val jobs = (2..totalPages).map {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val filterWithNewPage = filter.toBuilder().page(it.toInt()).build()
+                        val data = client.remoteDataSource().getServices(filterWithNewPage)
+                        synchronized(services) {
+                            services.addAll(data.data)
+                        }
                     }
                 }
+                jobs.joinAll()
             }
-            jobs.joinAll()
-        }
-        return services
+            return Result.success(services)
+        }.onFailure { return Result.failure(it) }
+        return Result.failure(DataSourceException())
     }
 }

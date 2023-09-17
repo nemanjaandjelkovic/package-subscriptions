@@ -3,18 +3,18 @@ package com.dcs.datasource
 import com.dcs.datasource.exception.DataSourceException
 import com.dcs.oiremote.FilterType
 import com.dcs.oiremote.OIClientService
-import com.digitalchargingsolutions.middleware.oiapiclient.datasource.service.OIServiceRemoteDataSource
 import com.digitalchargingsolutions.middleware.oiapiclient.model.filter.ServiceFilter
 import com.digitalchargingsolutions.middleware.oiapiclient.model.response.Service
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 class RemoteDataSource(private val client: OIClientService) : DataSource {
-    companion object{
+    companion object {
         private const val ASSET_DETAILS = "assetDetails"
         private const val LT = "lt"
         private const val GT = "gt"
     }
+
     override fun getBookedSubscription(): Result<List<Service>> {
         val filter = ServiceFilter.builder()
             .code(FilterType.CODE.value)
@@ -22,7 +22,7 @@ class RemoteDataSource(private val client: OIClientService) : DataSource {
             .expand(ASSET_DETAILS)
             .build()
         runCatching {
-            return Result.success(client.getServices(filter))
+            return client.getServices(filter)
         }.onFailure {
             return Result.failure(DataSourceException(it.message))
         }
@@ -36,7 +36,7 @@ class RemoteDataSource(private val client: OIClientService) : DataSource {
             .validTo("$LT(${currentTimeInEpoch})")
             .build()
         runCatching {
-            return Result.success(client.getServices(filter))
+            return client.getServices(filter)
         }.onFailure {
             return Result.failure(DataSourceException(it.message))
         }
@@ -50,7 +50,7 @@ class RemoteDataSource(private val client: OIClientService) : DataSource {
             .created("$LT(${timeLastJobActive})")
             .build()
         runCatching {
-            return Result.success(client.getServices(filter))
+            return client.getServices(filter)
         }.onFailure {
             return Result.failure(DataSourceException(it.message))
         }

@@ -1,4 +1,4 @@
-url: http://localhost:18080/api/masterdata/
+url: ${OI_URL}/api/masterdata/
 headers:
   user-id: cic.all
 options:
