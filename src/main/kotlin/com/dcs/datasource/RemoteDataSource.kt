@@ -10,16 +10,18 @@ import java.time.ZoneOffset
 
 class RemoteDataSource(private val client: OIClientService) : DataSource {
     companion object {
-        private const val ASSET_DETAILS = "assetDetails"
-        private const val LT = "lt"
-        private const val GT = "gt"
+        //TODO preimenovati u ono sto znaci
+        private const val LE = "le"
+        private const val GE = "ge"
     }
 
-    override fun getBookedSubscription(): Result<List<Service>> {
+    // FILTER
+    // Da bude vece ili jednako od pocetka dana ( 00:00 danas) do 23:59:59:9999
+    override fun getBookedSubscriptions(): Result<List<Service>> {
         val filter = ServiceFilter.builder()
+            //TODO Dodati valid from
             .code(FilterType.CODE.value)
             .assetState(FilterType.ASSET_STATE_FOR_BOOKED_SERVICE.value)
-            .expand(ASSET_DETAILS)
             .build()
         runCatching {
             return client.getServices(filter)
@@ -32,8 +34,9 @@ class RemoteDataSource(private val client: OIClientService) : DataSource {
     override fun getExpiredSubscription(): Result<List<Service>> {
         val currentTimeInEpoch = OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
         val filter = ServiceFilter.builder()
+            //TODO FilterType prebaciti u kanstante unutar ove klase i izbrisati enum
             .code(FilterType.CODE.value)
-            .validTo("$LT(${currentTimeInEpoch})")
+            .validTo("$LE(${currentTimeInEpoch})")
             .build()
         runCatching {
             return client.getServices(filter)
@@ -46,8 +49,8 @@ class RemoteDataSource(private val client: OIClientService) : DataSource {
     override fun getUpdatedSubscription(timeLastJobActive: Long): Result<List<Service>> {
         val filter = ServiceFilter.builder()
             .code(FilterType.CODE.value)
-            .updated("$GT(${timeLastJobActive})")
-            .created("$LT(${timeLastJobActive})")
+            .updated("$GE(${timeLastJobActive})")
+            .created("$LE(${timeLastJobActive})")
             .build()
         runCatching {
             return client.getServices(filter)

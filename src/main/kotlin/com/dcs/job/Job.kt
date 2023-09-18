@@ -15,6 +15,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 @Component
+//TODO preimenovati Job u nesto smisleno
 class Job {
 
     @Autowired
@@ -26,12 +27,14 @@ class Job {
     @Value("\${package-events.job.schedule-time}")
     private var jobTime: Int = 0
 
+    //TODO preimenovati sve tri metode u ono sto rade
     @Scheduled(fixedRateString = "\${package-events.job.schedule-time}")
     fun getBookedSubscription() {
-        val data = dataSource.getBookedSubscription()
+        val data = dataSource.getBookedSubscriptions()
         data.onSuccess {
             sender.sendBulk(it, STATUS_BOOKED)
         }.onFailure {
+            //TODO Izbaciti println i ubaciti log
             println(it.message)
         }
     }

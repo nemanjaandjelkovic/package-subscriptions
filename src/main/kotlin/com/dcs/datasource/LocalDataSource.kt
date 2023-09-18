@@ -14,7 +14,7 @@ class LocalDataSource : DataSource {
         private const val FILE_NAME = "data.json"
     }
 
-    override fun getBookedSubscription(): Result<List<Service>> {
+    override fun getBookedSubscriptions(): Result<List<Service>> {
         return Result.success(getSubscriptionFromFile().filter { it.assetState == FilterType.ASSET_STATE_FOR_BOOKED_SERVICE.value && it.code == FilterType.CODE.value })
     }
 
